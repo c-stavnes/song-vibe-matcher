@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🎵 Song Vibe Matcher</title>
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+
+  <h1>🎧 Song Vibe Matcher</h1>
+  <p>Enter a song you like, and we'll suggest others with a similar vibe.</p>
+
+  <input id="song-input" type="text" placeholder="e.g., Blinding Lights - The Weeknd" />
+  <button py-click="get_recommendations()">Find Similar Songs</button>
+
+  <h3>Results:</h3>
+  <pre id="results">🎶 Waiting for your vibe...</pre>
+
+  <py-script>
+from js import fetch
+import js
+import asyncio
+
+async def get_recommendations():
+    song = js.document.getElementById("song-input").value
+    js.document.getElementById("results").innerText = "🔄 Finding songs..."
+
+    response = await fetch(
+        "http://localhost:5000/vibe-match",
+        method="POST",
+        headers={"Content-Type": "application/json"},
+        body=js.JSON.stringify({"song": song})
+    )
+    
+    if response.ok:
+        data = await response.json()
+        js.document.getElementById("results").innerText = data["results"]
+    else:
+        js.document.getElementById("results").innerText = "⚠️ Something went wrong."
+  </py-script>
+
+</body>
+</html>
